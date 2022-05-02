@@ -1,29 +1,22 @@
 const { NotImplementedError } = require('../extensions/index.js');
 
-// const { Node } = require('../extensions/list-tree.js');
+const { Node } = require('../extensions/list-tree.js');
 
 /**
 * Implement simple binary search tree according to task description
 * using Node from extensions
 */
-class Node {
-  constructor(data) {
-      this.data = data;
-      this.left = null;
-      this.right = null;
-  }
-}
 class BinarySearchTree {
   constructor(){
-    this.root = null;
+    this.tree = null;
   }
 
   root() {
-    return this.root;
+    return this.tree;
   }
 
   add(data) {
-    this.root = addWithin(this.root, data);
+    this.tree = addWithin(this.tree, data);
 
     function addWithin(node, data) {
       if(!node) {
@@ -43,102 +36,99 @@ class BinarySearchTree {
   }
 
   has(data) {
-    return searchWithin(this.root, data);
+    return hasNode(this.tree, data);
 
-    function searchWithin (node, data) {
+    function hasNode (node, data) {
       if(!node) {
         return false;
       }
       if (node.data === data) {
         return true;
       }
-      return data < node.data ?
-        searchWithin(node.left, data) :
-        searchWithin(node.right, data);
+      return data < node.data ? hasNode(node.left, data) : hasNode(node.right, data);
     }
   }
 
   find(data) {
-    return searchNode(this.root, data);
+    return findNode(this.tree, data);
 
-    function searchNode(node, data) {
+    function findNode(node, data) {
       if(!node) {
-        return false;
+        return null;
       }
       if (node.data === data) {
-        return node.data;
+        return node;
       }
       return data < node.data ?
-        searchNode(node.left, data) :
-        searchNode(node.right, data);
+        findNode(node.left, data) :
+        findNode(node.right, data);
     }
   }
 
   remove(data) {
-    this.root = removeNode(this.root, data);
-
-    function removeNode(node, data) {
-      if(!node) {
-        return null;
+    this.tree = this.removeNode(this.tree, data);
+  }
+  removeNode(node, data) {
+    if(!node) {
+      return null;
+    }
+    if (data < node.data) {
+      node.left = this.removeNode(node.left, data);
+      return node;
+    } else if (node.data < data) {
+      node.right = this.removeNode(node.right, data);
+      return node;
+    } else {
+      if (!node.left && !node.right) {
+        return null
       }
-      if (data < node.data) {
-        node.left = removeNode(node.left, data);
-        return node;
-      } else if (node.data < data) {
-        node.right = removeNode(node.right, data);
-        return node;
-      } else {
-        if (!node.left && !node.right) {
-          return null;
-        }
 
-        if (!node.left) {
-          node = node.right;
-          return node;
-        }
-
-        if (!node.right) {
-          node = node.left;
-          return node;
-        }
-
-        let minFromRight = node.right;
-        while(minFromRight.left) {
-          minFromRight = minFromRight.left;
-        }
-        node.data = minFromRight.data;
-
-        node.right = removeNode(node.right, minFromRight.data);
-
+      if (!node.left) {
+        node = node.right;
         return node;
       }
+
+      if (!node.right) {
+        node = node.left;
+        return node;
+      }
+
+      let maxFromLeft = node.left;
+      while(maxFromLeft.right) {
+        maxFromLeft = maxFromLeft.right;
+      }
+      node.data = maxFromLeft.data;
+
+      node.left = this.removeNode(node.left, maxFromLeft.data);
+
+      return node;
     }
   }
 
   min() {
-    if(!this.root) {
+    if(!this.tree) {
       return;
     }
 
-    let node = this.root;
-    while (node.left) {
-      node = node.left;
+    let minNode = this.tree;
+    while (minNode.left) {
+      minNode = minNode.left;
     }
 
-    return node.data;
+    return minNode.data;
   }
 
   max() {
-    if(!this.root) {
+    if(!this.tree) {
       return;
     }
 
-    let node = this.root;
-    while (node.right) {
-      node = node.right;
+    let maxNode = this.tree;
+    while (maxNode.right) {
+      maxNode = maxNode.right;
     }
 
-    return node.data;
+    return maxNode.data;
   }
 }
 
